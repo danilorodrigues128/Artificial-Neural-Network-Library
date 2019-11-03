@@ -1,2 +1,2 @@
 # Artificial Neural Network Library
-The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on the development of Evolutive Algorithms.
+The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on the development of Artificial Intelligence Algorithms. It's flexibility allows the developer to create Neural Networks with any number of layers containing different numbers of neurons at each one, set the weigths of the connections and manipulate the output of the algorithm as a simple array.
