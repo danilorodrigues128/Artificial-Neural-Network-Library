@@ -6,8 +6,6 @@
 #include <time.h>
 #include <ANNL.h>
 
-using namespace std;
-
 int main(int argc, char** argv)
 {
 	NeuralNetwork Net;
