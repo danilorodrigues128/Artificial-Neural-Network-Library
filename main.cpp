@@ -8,7 +8,7 @@
 
 int main(int argc, char** argv)
 {
-	NeuralNetwork Net;
+	NeuralNetwork Net(true);
 
 	Net.setLayers(4);
 
