@@ -45,21 +45,21 @@ void NeuralNetwork::allocatePulses()
 			layers[i].neurons[j].allocatePulses();
 }
 
-void NeuralNetwork::setNeurons(int _Layer, int _nNeuron)
+void NeuralNetwork::setNeurons(int _Layer, int _nNeurons)
 {
 	if (_Layer > n_layers - 1 || _Layer < 0)
 	{
 		std::cout << "[ERROR] Layer '" << _Layer << "' not found!" << std::endl;
 		exit(0);
 	}
-	else if(_nNeuron < 0)
+	else if(_nNeurons < 0)
 	{
 		std::cout << "[ERROR] _nNeurons must be a positive number!" << std::endl;
 		exit(0);
 	}
 
-	layers[_Layer].setNeurons(_nNeuron);
-	n_neurons[_Layer] = _nNeuron;
+	layers[_Layer].setNeurons(_nNeurons);
+	n_neurons[_Layer] = _nNeurons;
 }
 
 void NeuralNetwork::setSynapses()
@@ -114,6 +114,22 @@ void NeuralNetwork::setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, in
 	}
 
 	layers[_fromLayer].neurons[_fromNeuron].setWeight(_toNeuron, _Weight);
+}
+
+void NeuralNetwork::setBias(int _Layer, int _Neuron, float _Bias)
+{
+	if (_Layer <= 0)
+	{
+		std::cout << "[ERROR] Layer '" << _Layer << "' must be greater than 0!" << std::endl;
+		exit(0);
+	}
+	else if (_Neuron < 0 || _Neuron >= n_neurons[_Layer])
+	{
+		std::cout << "[ERROR] Neuron '" << _Neuron << "' not found on layer '" << _Layer << "'" << std::endl;
+		exit(0);
+	}
+
+	layers[_Layer].neurons[_Neuron].setBias(_Bias);
 }
 
 int NeuralNetwork::getNNeurons(int _Layer)
@@ -175,25 +191,56 @@ void NeuralNetwork::sendPulse(int _fromNeuron, float _Pulse)
 	}
 }
 
-void NeuralNetwork::saveWeights(const char _Path[])
+void NeuralNetwork::save(const char _Path[])
 {
 	std::ofstream FILE;
 	FILE.open(_Path);
 	for (int i = 0; i < n_layers - 1; i++)
 		for (int j = 0; j < n_neurons[i]; j++)
 			for (int k = 0; k < n_neurons[i + 1]; k++)
-				FILE << getWeight(i, j, k) << "\n";
+				FILE << getWeight(i, j, k) << " ";
+
+	for (int i = 1; i < n_layers; i++)
+		for (int j = 0; j < n_neurons[i]; j++)
+			FILE << layers[i].neurons[j].getBias() << " ";
+		
 	FILE.close();
 }
 
-void NeuralNetwork::loadWeights(char* _Path)
+void NeuralNetwork::load(char* _Path)
 {
 	std::ifstream FILE;
-	int Weight, cLayer = 0, cNeuron = 0, tNeuron = 0;
+	int Parameter, Bias, cLayer = 0, cNeuron = 0, tNeuron = 0;
+	bool flagBias = false;
 	FILE.open(_Path);
-	while (FILE >> Weight)
+	while (FILE >> Parameter)
 	{
-		setWeight(cLayer, cNeuron, tNeuron, Weight);
+		if (flagBias)
+		{
+			layers[cLayer].neurons[cNeuron].setBias(Parameter);
+
+			if (cNeuron < n_neurons[cLayer] - 1)
+			{
+				cNeuron++;
+			}
+			else
+			{
+				cNeuron = 0;
+				if (cLayer < n_layers - 1)
+				{
+					cLayer++;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			continue;
+		}
+
+		if (cLayer <= n_layers - 2)
+			setWeight(cLayer, cNeuron, tNeuron, Parameter);
 
 		if (tNeuron < n_neurons[cLayer + 1] - 1)
 		{
@@ -215,7 +262,11 @@ void NeuralNetwork::loadWeights(char* _Path)
 				}
 				else
 				{
-					break;
+					flagBias = true; //Starts the Bias loading
+					cLayer = 1;
+					cNeuron = 0;
+
+					continue;
 				}
 			}
 		}
@@ -231,27 +282,32 @@ float* NeuralNetwork::outputNeurons()
 	if (n_neurons[n_layers - 1] > 0)
 		output = new float[n_neurons[n_layers - 1]];
 
-	for (int i = 1; i < n_layers - 1; i++)
+	//--------------------[HIDDEN LAYERS]--------------------//
+	for (int i = 1; i < n_layers - 1; i++) // i -> Current layer
 	{
-		for (int j = 0; j < n_neurons[i]; j++)
+		for (int j = 0; j < n_neurons[i]; j++) // j -> Current neuron
 		{
 			sum = 0;
-			for (int k = 0; k < n_neurons[i - 1]; k++)
+			for (int k = 0; k < n_neurons[i - 1]; k++) // k -> Neuron behind
 			{
-				sum += layers[i].neurons[j].getPulse(k);
+				sum += layers[i].neurons[j].getPulse(k); // Sums all the weighted pulses from the layer behind
 			}
+			
+			sum += layers[i].neurons[j].getBias(); // Sums the neuron bias
 
 			if (sum < 0 && ignoreNegatives == true)
 				sum = 0;
 
-			for (int k = 0; k < n_neurons[i + 1]; k++)
+			for (int k = 0; k < n_neurons[i + 1]; k++) // k -> Neuron forward
 			{
 				layers[i + 1].neurons[k].resetPulse(j);
-				layers[i + 1].neurons[k].recievePulse(j, sum * layers[i].neurons[j].getWeight(k));
+				layers[i + 1].neurons[k].recievePulse(j, sum * layers[i].neurons[j].getWeight(k)); // Sends the weighted pulse to the forward neurons
 			}
 		}
 	}
+	//-------------------------------------------------------//
 
+	//--------------------[OUTPUT LAYER]--------------------//
 	for (int j = 0; j < n_neurons[n_layers - 1]; j++)
 	{
 		sum = 0;
@@ -259,10 +315,15 @@ float* NeuralNetwork::outputNeurons()
 		{
 			sum += layers[n_layers - 1].neurons[j].getPulse(k);
 		}
+
+		sum += layers[n_layers - 1].neurons[j].getBias();
+
 		if (sum < 0 && ignoreNegatives == true)
 			sum = 0;
+
 		output[j] = sum;
 	}
+	//------------------------------------------------------//
 
 	return output;
 }

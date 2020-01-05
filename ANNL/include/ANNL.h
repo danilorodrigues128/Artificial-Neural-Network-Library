@@ -15,7 +15,7 @@ private:
 	void allocateWeights();
 	void allocatePulses();
 public:
-	NeuralNetwork(bool _ignoreNegatives);
+	NeuralNetwork(bool _ignoreNegatives = false);
 
 	void config();
 
@@ -25,6 +25,8 @@ public:
 
 	void setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, int _Weight);
 
+	void setBias(int _Layer, int _Neuron, float _Bias);
+
 	int getNNeurons(int _Layer);
 
 	int getNLayers();
@@ -33,9 +35,9 @@ public:
 
 	void sendPulse(int _fromNeuron, float _Pulse);
 
-	void saveWeights(const char _Path[]);
+	void save(const char _Path[]);
 
-	void loadWeights(char* _Path);
+	void load(char* _Path);
 
 	float* outputNeurons();
 };

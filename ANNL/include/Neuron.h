@@ -9,8 +9,9 @@ private:
 	
 	int neuronsBehind;
 	int neuronsForward;
-	float* pulses;
+	float* pulses; //Stores the all the weighted pulses from the layer behind
 	int* weights;
+	float Bias;
 public:
 	Neuron();
 
@@ -20,7 +21,11 @@ public:
 
 	void setWeight(int _Id, int _Weight);
 
+	void setBias(int _Bias);
+
 	int getWeight(int _Id);
+
+	float getBias();
 
 	void setNeuronsAround(int _nBehind, int _nForward);
 

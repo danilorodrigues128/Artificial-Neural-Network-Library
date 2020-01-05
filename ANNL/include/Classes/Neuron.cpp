@@ -6,6 +6,7 @@ Neuron::Neuron()
 	neuronsForward = 0;
 	pulses = NULL;
 	weights = NULL;
+	Bias = 0;
 }
 
 float Neuron::getPulse(int _Id)
@@ -30,9 +31,19 @@ void Neuron::setWeight(int _Id, int _Weight)
 		weights[_Id] = _Weight;
 }
 
+void Neuron::setBias(int _Bias)
+{
+	Bias = _Bias;
+}
+
 int Neuron::getWeight(int _Id)
 {
 	return weights[_Id];
+}
+
+float Neuron::getBias()
+{
+	return Bias;
 }
 
 void Neuron::setNeuronsAround(int _nBehind, int _nForward)
