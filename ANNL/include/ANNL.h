@@ -9,13 +9,16 @@ private:
 	int n_layers;
 	int* n_neurons;
 	bool ignoreNegatives;
-	Layer* layers;
 
 	void setSynapses();
 	void allocateWeights();
 	void allocatePulses();
 public:
-	NeuralNetwork(bool _ignoreNegatives = false);
+	Layer* layers;
+
+	enum act_func { LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN } activationFunction;
+
+	NeuralNetwork(act_func _activationFunction);
 
 	void config();
 
@@ -37,7 +40,7 @@ public:
 
 	void save(const char _Path[]);
 
-	void load(char* _Path);
+	void load(const char _Path[]);
 
 	float* outputNeurons();
 };

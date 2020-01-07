@@ -1,14 +1,18 @@
 #include <ANNL.h>
+#include <math.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 
-NeuralNetwork::NeuralNetwork(bool _ignoreNegatives)
+#define M_E 2.718281828459045235360287
+
+NeuralNetwork::NeuralNetwork(act_func _activationFunction)
 {
 	n_layers = 0;
 	n_neurons = NULL;
 	layers = NULL;
-	ignoreNegatives = _ignoreNegatives;
+	
+	activationFunction = _activationFunction;
 }
 
 void NeuralNetwork::config()
@@ -207,7 +211,7 @@ void NeuralNetwork::save(const char _Path[])
 	FILE.close();
 }
 
-void NeuralNetwork::load(char* _Path)
+void NeuralNetwork::load(const char _Path[])
 {
 	std::ifstream FILE;
 	int Parameter, Bias, cLayer = 0, cNeuron = 0, tNeuron = 0;
@@ -276,7 +280,7 @@ void NeuralNetwork::load(char* _Path)
 
 float* NeuralNetwork::outputNeurons()
 {
-	float sum = 0;
+	double sum = 0;
 	float* output = NULL;
 
 	if (n_neurons[n_layers - 1] > 0)
@@ -295,8 +299,47 @@ float* NeuralNetwork::outputNeurons()
 			
 			sum += layers[i].neurons[j].getBias(); // Sums the neuron bias
 
-			if (sum < 0 && ignoreNegatives == true)
-				sum = 0;
+			//------[ACTIVATION FUNCTIONS]------//
+			switch (activationFunction)
+			{
+			case LINEAR:
+				break;
+			case BINARY_STEP:
+				if (sum < 0)
+					sum = 0;
+				else
+					sum = 1;
+				break;
+			case SIGMOID:
+				sum = 1 / (1 + pow(M_E, -1 * sum));
+				break;
+			case TANH:
+				sum = tanh(sum);
+				break;
+			case RELU:
+				if (sum <= 0)
+					sum = 0;
+				break;
+			case GAUSSIAN:
+				sum = pow(M_E, -1 * pow(sum, 2));
+				break;
+			case SINC:
+				if (sum == 0)
+					sum = 1;
+				else
+					sum = sin(sum) / sum;
+				break;
+			case BENT_IDENTITY:
+				sum = (sqrt(pow(sum, 2) + 1) - 1) / 2 + sum;
+				break;
+			case SOFTPLUS:
+				sum = log(1 + pow(M_E, sum));
+				break;
+			case SOFTSIGN:
+				sum = sum / (1 + fabs(sum));
+				break;
+			}
+			//----------------------------------//
 
 			for (int k = 0; k < n_neurons[i + 1]; k++) // k -> Neuron forward
 			{
@@ -318,8 +361,47 @@ float* NeuralNetwork::outputNeurons()
 
 		sum += layers[n_layers - 1].neurons[j].getBias();
 
-		if (sum < 0 && ignoreNegatives == true)
-			sum = 0;
+		//------[ACTIVATION FUNCTIONS]------//
+		switch (activationFunction)
+		{
+		case LINEAR:
+			break;
+		case BINARY_STEP:
+			if (sum < 0)
+				sum = 0;
+			else
+				sum = 1;
+			break;
+		case SIGMOID:
+			sum = 1 / (1 + pow(M_E, -1 * sum));
+			break;
+		case TANH:
+			sum = tanh(sum);
+			break;
+		case RELU:
+			if (sum <= 0)
+				sum = 0;
+			break;
+		case GAUSSIAN:
+			sum = pow(M_E, -1 * pow(sum, 2));
+			break;
+		case SINC:
+			if (sum == 0)
+				sum = 1;
+			else
+				sum = sin(sum) / sum;
+			break;
+		case BENT_IDENTITY:
+			sum = (sqrt(pow(sum, 2) + 1) - 1) / 2 + sum;
+			break;
+		case SOFTPLUS:
+			sum = log(1 + pow(M_E, sum));
+			break;
+		case SOFTSIGN:
+			sum = sum / (1 + fabs(sum));
+			break;
+		}
+		//----------------------------------//
 
 		output[j] = sum;
 	}

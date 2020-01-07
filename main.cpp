@@ -8,7 +8,7 @@
 
 int main(int argc, char** argv)
 {
-	NeuralNetwork Net;
+	NeuralNetwork Net(NeuralNetwork::LINEAR);
 
 	Net.setLayers(4);
 
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	Net.setNeurons(3, 3);
 
 	Net.config();
-	
+
 	srand(time(NULL));
 	for (int i = 0; i < Net.getNLayers() - 1; i++)
 	{
@@ -44,8 +44,7 @@ int main(int argc, char** argv)
 	for (int i = 0; i < Net.getNNeurons(Net.getNLayers() - 1); i++)
 		std::cout << output[i] << std::endl;
 
-	char path[] = "Param.ANNL";
-	Net.save(path);
+	//Net.save("Param.ANNL");
 
 	return 0;
 }
