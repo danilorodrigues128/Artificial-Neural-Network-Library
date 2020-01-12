@@ -5,18 +5,8 @@
 
 class NeuralNetwork
 {
-private:
-	int n_layers;
-	int* n_neurons;
-	bool ignoreNegatives;
-
-	void setSynapses();
-	void allocateWeights();
-	void allocatePulses();
 public:
-	Layer* layers;
-
-	enum act_func { LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN } activationFunction;
+	enum act_func { LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN };
 
 	NeuralNetwork(act_func _activationFunction);
 
@@ -36,6 +26,8 @@ public:
 
 	int getWeight(int _fromLayer, int _fromNeuron, int _toNeuron);
 
+	float getBias(int _Layer, int _Neuron);
+
 	void sendPulse(int _fromNeuron, float _Pulse);
 
 	void save(const char _Path[]);
@@ -43,6 +35,17 @@ public:
 	void load(const char _Path[]);
 
 	float* outputNeurons();
+
+private:
+	int n_layers;
+	int* n_neurons;
+	Layer* layers;
+
+	act_func activationFunction;
+
+	void setSynapses();
+	void allocateWeights();
+	void allocatePulses();
 };
 
 #endif

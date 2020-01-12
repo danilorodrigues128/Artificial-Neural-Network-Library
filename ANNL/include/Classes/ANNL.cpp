@@ -111,11 +111,6 @@ void NeuralNetwork::setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, in
 		std::cout << "[ERROR] Neuron '" << _toNeuron << "' not found on layer '" << _fromLayer + 1 << "'!" << std::endl;
 		exit(0);
 	}
-	else if (_Weight < -1000 || _Weight > 1000)
-	{
-		std::cout << "[ERROR] _Weight must be an integer between -1000 and 1000!" << std::endl;
-		exit(0);
-	}
 
 	layers[_fromLayer].neurons[_fromNeuron].setWeight(_toNeuron, _Weight);
 }
@@ -176,6 +171,11 @@ int NeuralNetwork::getWeight(int _fromLayer, int _fromNeuron, int _toNeuron)
 	}
 
 	return layers[_fromLayer].neurons[_fromNeuron].getWeight(_toNeuron);
+}
+
+float NeuralNetwork::getBias(int _Layer, int _Neuron)
+{
+	return layers[_Layer].neurons[_Neuron].getBias();
 }
 
 void NeuralNetwork::sendPulse(int _fromNeuron, float _Pulse)
