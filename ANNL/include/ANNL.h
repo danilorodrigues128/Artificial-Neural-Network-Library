@@ -28,6 +28,8 @@ public:
 
 	float getBias(int _Layer, int _Neuron);
 
+	float getNeuronPulse(int _Layer, int _Neuron);
+
 	void sendPulse(int _fromNeuron, float _Pulse);
 
 	void save(const char _Path[]);

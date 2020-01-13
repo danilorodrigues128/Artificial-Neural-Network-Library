@@ -178,6 +178,11 @@ float NeuralNetwork::getBias(int _Layer, int _Neuron)
 	return layers[_Layer].neurons[_Neuron].getBias();
 }
 
+float NeuralNetwork::getNeuronPulse(int _Layer, int _Neuron)
+{
+	return layers[_Layer].neurons[_Neuron].myPulse;
+}
+
 void NeuralNetwork::sendPulse(int _fromNeuron, float _Pulse)
 {
 	if (_fromNeuron < 0 || _fromNeuron > n_neurons[0] - 1)
@@ -341,6 +346,8 @@ float* NeuralNetwork::outputNeurons()
 			}
 			//----------------------------------//
 
+			layers[i].neurons[j].myPulse = sum;
+
 			for (int k = 0; k < n_neurons[i + 1]; k++) // k -> Neuron forward
 			{
 				layers[i + 1].neurons[k].resetPulse(j);
@@ -402,6 +409,8 @@ float* NeuralNetwork::outputNeurons()
 			break;
 		}
 		//----------------------------------//
+
+		layers[n_layers - 1].neurons[j].myPulse = sum;
 
 		output[j] = sum;
 	}

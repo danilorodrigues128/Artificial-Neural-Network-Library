@@ -13,6 +13,8 @@ private:
 	int* weights;
 	float Bias;
 public:
+	float myPulse;
+
 	Neuron();
 
 	float getPulse(int _Id);
