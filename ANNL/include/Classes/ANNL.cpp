@@ -6,13 +6,14 @@
 
 #define M_E 2.718281828459045235360287
 
-NeuralNetwork::NeuralNetwork(act_func _activationFunction)
+NeuralNetwork::NeuralNetwork(act_func _activationFunction, bool _backpropagation)
 {
 	n_layers = 0;
 	n_neurons = NULL;
 	layers = NULL;
 	
 	activationFunction = _activationFunction;
+	backprop = _backpropagation;
 }
 
 void NeuralNetwork::config()
@@ -20,6 +21,37 @@ void NeuralNetwork::config()
 	setSynapses();
 	allocateWeights();
 	allocatePulses();
+
+	if (backprop)
+	{
+		del_C_Weights = new float** [n_layers]; //layer; j; k
+		del_C_Biases = new float* [n_layers];
+
+		for (int i = 1; i < n_layers; i++)
+		{
+			layers[i].del_C = new float*[n_neurons[i]];
+			del_C_Weights[i] = new float* [n_neurons[i]];
+			for (int c = 0; c < n_neurons[i]; c++)
+			{
+				layers[i].del_C[c] = new float[n_neurons[i - 1]];
+				del_C_Weights[i][c] = new float[n_neurons[i - 1]];
+			}
+
+			layers[i].gamma = new float[n_neurons[i]];
+			del_C_Biases[i] = new float[n_neurons[i]];
+
+			for (int j = 0; j < n_neurons[i]; j++)
+			{
+				for (int k = 0; k < n_neurons[i - 1]; k++)
+				{
+					layers[i].del_C[j][k] = 0;
+					del_C_Weights[i][j][k] = 0;
+				}
+				layers[i].gamma[j] = 0;
+				del_C_Biases[i][j] = 0;
+			}
+		}
+	}
 }
 
 void NeuralNetwork::setLayers(int _Layers)
@@ -94,7 +126,7 @@ void NeuralNetwork::setSynapses()
 	}
 }
 
-void NeuralNetwork::setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, int _Weight)
+void NeuralNetwork::setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, float _Weight)
 {
 	if (_fromLayer < 0 || _fromLayer > n_layers - 2)
 	{
@@ -147,7 +179,7 @@ int NeuralNetwork::getNLayers()
 	return n_layers;
 }
 
-int NeuralNetwork::getWeight(int _fromLayer, int _fromNeuron, int _toNeuron)
+float NeuralNetwork::getWeight(int _fromLayer, int _fromNeuron, int _toNeuron)
 {
 	if (_fromLayer < 0 || _fromLayer > n_layers - 1)
 	{
@@ -191,12 +223,128 @@ void NeuralNetwork::sendPulse(int _fromNeuron, float _Pulse)
 		exit(0);
 	}
 
+	layers[0].neurons[_fromNeuron].myPulse = _Pulse;
+
 	float* mult = layers[0].neurons[_fromNeuron].multiplyWeights(_Pulse);
 	
 	for (int i = 0; i < n_neurons[1]; i++)
 	{
 		layers[1].neurons[i].resetPulse(_fromNeuron);
 		layers[1].neurons[i].recievePulse(_fromNeuron, mult[i]);
+	}
+}
+
+void NeuralNetwork::backpropagation(float _Hypothesis[])
+{
+	backprop_count++;
+
+	switch (activationFunction)
+	{
+	//Add outras
+	case SIGMOID:
+		//----[GAMMA-OUTPUT]----//
+		for (int j = 0; j < n_neurons[n_layers - 1]; j++)
+		{
+			float sum = 0;
+			for (int k = 0; k < n_neurons[n_layers - 2]; k++)
+				sum += layers[n_layers - 2].neurons[k].myPulse * getWeight(n_layers - 2, k, j);
+			sum += layers[n_layers - 1].neurons[j].getBias();
+			/*std::cout << "SUM: " << r << std::endl;
+			std::cout << "DIFF: " << layers[n_layers - 1].neurons[j].myPulse - _Hypothesis[j] << std::endl;*/
+			//std::cout << std::endl << "SIG': " << (1 / (1 + pow(M_E, -1 * sum))) * (1 - (1 / (1 + pow(M_E, -1 * sum)))) << std::endl << std::endl;
+
+			layers[n_layers - 1].gamma[j] = (layers[n_layers - 1].neurons[j].myPulse - _Hypothesis[j]) * (1 / (1 + pow(M_E, -1 * sum))) * (1 - (1 / (1 + pow(M_E, -1 * sum))));
+			del_C_Biases[n_layers - 1][j] += layers[n_layers - 1].gamma[j];
+		}
+		//----[DEL_C-OUTPUT]----//
+		for (int n = 0; n < n_neurons[n_layers - 1]; n++)
+		{
+			for (int m = 0; m < n_neurons[n_layers - 2]; m++)
+			{
+				layers[n_layers - 1].del_C[n][m] = layers[n_layers - 1].gamma[n] * layers[n_layers - 2].neurons[m].myPulse;
+				del_C_Weights[n_layers - 1][n][m] += layers[n_layers - 1].del_C[n][m];
+			}
+		}
+
+		for (int i = n_layers - 2; i > 0; i--)
+		{
+			//----[GAMMA-HIDDEN]----//
+			for (int k = 0; k < n_neurons[i]; k++)
+			{
+				for (int j = 0; j < n_neurons[i + 1]; j++)
+				{
+					layers[i].gamma[k] += getWeight(i, k, j) * layers[i + 1].gamma[j];
+				}
+				
+				float sum = 0;
+				for (int r = 0; r < n_neurons[i - 1]; r++)
+					sum += layers[i - 1].neurons[r].myPulse * getWeight(i - 1, r, k);
+				sum += layers[i].neurons[k].getBias();
+
+				layers[i].gamma[k] *= (1 / (1 + pow(M_E, -1 * sum))) * (1 - (1 / (1 + pow(M_E, -1 * sum))));
+				del_C_Biases[i][k] += layers[i].gamma[k];
+			}
+
+			//----[DEL_C-HIDDEN]----//
+			for (int k = 0; k < n_neurons[i]; k++)
+			{
+				for (int q = 0; q < n_neurons[i - 1]; q++)
+				{
+					layers[i].del_C[k][q] = layers[i].gamma[k] * layers[i - 1].neurons[q].myPulse;
+					del_C_Weights[i][k][q] += layers[i].del_C[k][q];
+				}
+			}
+		}
+
+		break;
+	}
+}
+
+void NeuralNetwork::recalculateParameters(float _Epsilon)
+{
+	float del_C_Module = 0;
+	for (int i = n_layers - 1; i > 0; i--)
+	{
+		for (int j = 0; j < n_neurons[i]; j++)
+		{
+			for (int k = 0; k < n_neurons[i - 1]; k++)
+			{
+				del_C_Weights[i][j][k] /= backprop_count;
+				del_C_Module += pow(del_C_Weights[i][j][k], 2);
+			}
+			del_C_Biases[i][j] /= backprop_count;
+			del_C_Module += pow(del_C_Biases[i][j], 2);
+		}
+	}
+	del_C_Module = sqrt(del_C_Module);
+	backprop_count = 0;
+
+	float n = _Epsilon / del_C_Module;
+
+	for (int i = n_layers - 1; i > 0; i--)
+	{
+		for (int j = 0; j < n_neurons[i]; j++)
+		{
+			for (int k = 0; k < n_neurons[i - 1]; k++)
+			{
+				setWeight(i - 1, k, j, getWeight(i - 1, k, j) - n * del_C_Weights[i][j][k]);
+			}
+			setBias(i, j, getBias(i, j) - n * del_C_Biases[i][j]);
+		}
+	}
+
+	for (int i = 1; i < n_layers; i++)
+	{
+		for (int j = 0; j < n_neurons[i]; j++)
+		{
+			for (int k = 0; k < n_neurons[i - 1]; k++)
+			{
+				layers[i].del_C[j][k] = 0;
+				del_C_Weights[i][j][k] = 0;
+			}
+			layers[i].gamma[j] = 0;
+			del_C_Biases[i][j] = 0;
+		}
 	}
 }
 
@@ -219,7 +367,8 @@ void NeuralNetwork::save(const char _Path[])
 void NeuralNetwork::load(const char _Path[])
 {
 	std::ifstream FILE;
-	int Parameter, Bias, cLayer = 0, cNeuron = 0, tNeuron = 0;
+	float Parameter, Bias;
+	int cLayer = 0, cNeuron = 0, tNeuron = 0;
 	bool flagBias = false;
 	FILE.open(_Path);
 	while (FILE >> Parameter)
@@ -285,7 +434,7 @@ void NeuralNetwork::load(const char _Path[])
 
 float* NeuralNetwork::outputNeurons()
 {
-	double sum = 0;
+	float sum = 0;
 	float* output = NULL;
 
 	if (n_neurons[n_layers - 1] > 0)

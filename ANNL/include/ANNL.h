@@ -6,9 +6,13 @@
 class NeuralNetwork
 {
 public:
+	float*** del_C_Weights;
+	float** del_C_Biases;
+	Layer* layers;
+
 	enum act_func { LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN };
 
-	NeuralNetwork(act_func _activationFunction);
+	NeuralNetwork(act_func _activationFunction, bool _backpropagation = false);
 
 	void config();
 
@@ -16,7 +20,7 @@ public:
 
 	void setNeurons(int _Layer, int _nNeuron);
 
-	void setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, int _Weight);
+	void setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, float _Weight);
 
 	void setBias(int _Layer, int _Neuron, float _Bias);
 
@@ -24,13 +28,17 @@ public:
 
 	int getNLayers();
 
-	int getWeight(int _fromLayer, int _fromNeuron, int _toNeuron);
+	float getWeight(int _fromLayer, int _fromNeuron, int _toNeuron);
 
 	float getBias(int _Layer, int _Neuron);
 
 	float getNeuronPulse(int _Layer, int _Neuron);
 
 	void sendPulse(int _fromNeuron, float _Pulse);
+	
+	void backpropagation(float _Hypothesis[]);
+
+	void recalculateParameters(float _Epsilon);
 
 	void save(const char _Path[]);
 
@@ -41,7 +49,9 @@ public:
 private:
 	int n_layers;
 	int* n_neurons;
-	Layer* layers;
+
+	bool backprop;
+	int backprop_count = 0;
 
 	act_func activationFunction;
 

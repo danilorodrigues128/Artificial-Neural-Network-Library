@@ -25,18 +25,18 @@ float* Neuron::multiplyWeights(float _Pulse)
 	return mult;
 }
 
-void Neuron::setWeight(int _Id, int _Weight)
+void Neuron::setWeight(int _Id, float _Weight)
 {
 	if(_Id >= 0 && _Id < neuronsForward)
 		weights[_Id] = _Weight;
 }
 
-void Neuron::setBias(int _Bias)
+void Neuron::setBias(float _Bias)
 {
 	Bias = _Bias;
 }
 
-int Neuron::getWeight(int _Id)
+float Neuron::getWeight(int _Id)
 {
 	return weights[_Id];
 }
@@ -55,7 +55,7 @@ void Neuron::setNeuronsAround(int _nBehind, int _nForward)
 void Neuron::allocateWeight()
 {
 	if(neuronsForward > 0)
-		weights = new int[neuronsForward];
+		weights = new float[neuronsForward];
 }
 
 void Neuron::allocatePulses()

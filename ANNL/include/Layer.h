@@ -9,6 +9,8 @@ private:
 	int n_neurons;
 public:
 	Neuron* neurons;
+	float** del_C;
+	float* gamma;
 
 	Layer();
 
