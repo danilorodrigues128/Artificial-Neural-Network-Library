@@ -50,7 +50,7 @@ private:
 	int n_layers;
 	int* n_neurons;
 
-	bool backprop;
+	bool backpropagationFlag;
 	int backprop_count = 0;
 
 	act_func activationFunction;

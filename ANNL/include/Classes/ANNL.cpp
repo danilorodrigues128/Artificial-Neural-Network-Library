@@ -13,7 +13,7 @@ NeuralNetwork::NeuralNetwork(act_func _activationFunction, bool _backpropagation
 	layers = NULL;
 	
 	activationFunction = _activationFunction;
-	backprop = _backpropagation;
+	backpropagationFlag = _backpropagation;
 }
 
 void NeuralNetwork::config()
@@ -22,9 +22,20 @@ void NeuralNetwork::config()
 	allocateWeights();
 	allocatePulses();
 
-	if (backprop)
+	if (backpropagationFlag)
 	{
-		del_C_Weights = new float** [n_layers]; //layer; j; k
+		if (activationFunction == BINARY_STEP)
+		{
+			std::cout << "[ERROR] The activation function 'BINARY_STEP' cannot be backpropagated!" << std::endl;
+			exit(0);
+		}
+		else if (activationFunction == RELU)
+		{
+			std::cout << "[ERROR] The activation function 'RELU' cannot be backpropagated!" << std::endl;
+			exit(0);
+		}
+
+		del_C_Weights = new float** [n_layers];
 		del_C_Biases = new float* [n_layers];
 
 		for (int i = 1; i < n_layers; i++)
@@ -236,72 +247,144 @@ void NeuralNetwork::sendPulse(int _fromNeuron, float _Pulse)
 
 void NeuralNetwork::backpropagation(float _Hypothesis[])
 {
+	if (!backpropagationFlag)
+	{
+		std::cout << "[ERROR] 'backpropagationFlag' was set 'false'" << std::endl;
+		exit(0);
+	}
+
 	backprop_count++;
 
+	int max = 0;
+	for (int i = 0; i < n_layers; i++)
+		if (n_neurons[i] > max)
+			max = n_neurons[i];
+
+	float** functionDerivative = new float*[n_layers];
+	float** sum = new float*[n_layers];
+	for (int i = 0; i < n_layers; i++)
+	{
+		functionDerivative[i] = new float[max];
+		sum[i] = new float[max];
+	}
+
+	//----[WEIGHTED-SUM]----//
+	for (int i = n_layers - 1; i > 0; i--)
+	{
+		for (int j = 0; j < n_neurons[i]; j++)
+		{
+			sum[i][j] = 0;
+			for (int k = 0; k < n_neurons[i - 1]; k++)
+				sum[i][j] += layers[i - 1].neurons[k].myPulse * getWeight(i - 1, k, j);
+			sum[i][j] += layers[i].neurons[j].getBias();
+		}
+	}
+
+	//----[FUNCTIONS-DERIVATIVES]----//
 	switch (activationFunction)
 	{
-	//Add outras
-	case SIGMOID:
-		//----[GAMMA-OUTPUT]----//
-		for (int j = 0; j < n_neurons[n_layers - 1]; j++)
-		{
-			float sum = 0;
-			for (int k = 0; k < n_neurons[n_layers - 2]; k++)
-				sum += layers[n_layers - 2].neurons[k].myPulse * getWeight(n_layers - 2, k, j);
-			sum += layers[n_layers - 1].neurons[j].getBias();
-			/*std::cout << "SUM: " << r << std::endl;
-			std::cout << "DIFF: " << layers[n_layers - 1].neurons[j].myPulse - _Hypothesis[j] << std::endl;*/
-			//std::cout << std::endl << "SIG': " << (1 / (1 + pow(M_E, -1 * sum))) * (1 - (1 / (1 + pow(M_E, -1 * sum)))) << std::endl << std::endl;
-
-			layers[n_layers - 1].gamma[j] = (layers[n_layers - 1].neurons[j].myPulse - _Hypothesis[j]) * (1 / (1 + pow(M_E, -1 * sum))) * (1 - (1 / (1 + pow(M_E, -1 * sum))));
-			del_C_Biases[n_layers - 1][j] += layers[n_layers - 1].gamma[j];
-		}
-		//----[DEL_C-OUTPUT]----//
-		for (int n = 0; n < n_neurons[n_layers - 1]; n++)
-		{
-			for (int m = 0; m < n_neurons[n_layers - 2]; m++)
-			{
-				layers[n_layers - 1].del_C[n][m] = layers[n_layers - 1].gamma[n] * layers[n_layers - 2].neurons[m].myPulse;
-				del_C_Weights[n_layers - 1][n][m] += layers[n_layers - 1].del_C[n][m];
-			}
-		}
-
-		for (int i = n_layers - 2; i > 0; i--)
-		{
-			//----[GAMMA-HIDDEN]----//
-			for (int k = 0; k < n_neurons[i]; k++)
-			{
-				for (int j = 0; j < n_neurons[i + 1]; j++)
-				{
-					layers[i].gamma[k] += getWeight(i, k, j) * layers[i + 1].gamma[j];
-				}
-				
-				float sum = 0;
-				for (int r = 0; r < n_neurons[i - 1]; r++)
-					sum += layers[i - 1].neurons[r].myPulse * getWeight(i - 1, r, k);
-				sum += layers[i].neurons[k].getBias();
-
-				layers[i].gamma[k] *= (1 / (1 + pow(M_E, -1 * sum))) * (1 - (1 / (1 + pow(M_E, -1 * sum))));
-				del_C_Biases[i][k] += layers[i].gamma[k];
-			}
-
-			//----[DEL_C-HIDDEN]----//
-			for (int k = 0; k < n_neurons[i]; k++)
-			{
-				for (int q = 0; q < n_neurons[i - 1]; q++)
-				{
-					layers[i].del_C[k][q] = layers[i].gamma[k] * layers[i - 1].neurons[q].myPulse;
-					del_C_Weights[i][k][q] += layers[i].del_C[k][q];
-				}
-			}
-		}
-
+	case LINEAR:
+		for(int i = n_layers - 1; i > 0; i--)
+			for(int j = 0; j < n_neurons[i]; j++)
+				functionDerivative[i][j] = 1;
 		break;
+	case BINARY_STEP:
+		
+	case SIGMOID:
+		for (int i = n_layers - 1; i > 0; i--)
+			for (int j = 0; j < n_neurons[i]; j++)
+				functionDerivative[i][j] = (1 / (1 + pow(M_E, -1 * sum[i][j]))) * (1 - (1 / (1 + pow(M_E, -1 * sum[i][j]))));
+		break;
+	case TANH:
+		for (int i = n_layers - 1; i > 0; i--)
+			for (int j = 0; j < n_neurons[i]; j++)
+				functionDerivative[i][j] = 1 - pow(tanh(sum[i][j]), 2);
+		break;
+	case GAUSSIAN:
+		for (int i = n_layers - 1; i > 0; i--)
+			for (int j = 0; j < n_neurons[i]; j++)
+				functionDerivative[i][j] = -2*sum[i][j]*pow(M_E, -1 * pow(sum[i][j], 2));
+		break;
+	case SINC:
+		for (int i = n_layers - 1; i > 0; i--)
+		{
+			for (int j = 0; j < n_neurons[i]; j++)
+			{
+				if (sum[i][j] == 0)
+					functionDerivative[i][j] = 0;
+				else
+					functionDerivative[i][j] = (sum[i][j] * cos(sum[i][j]) - sin(sum[i][j])) / pow(sum[i][j], 2);
+			}
+		}
+		break;
+	case BENT_IDENTITY:
+		for (int i = n_layers - 1; i > 0; i--)
+			for (int j = 0; j < n_neurons[i]; j++)
+				functionDerivative[i][j] = sum[i][j] / (2 * sqrt(pow(sum[i][j], 2) + 1)) + 1;
+		break;
+	case SOFTPLUS:
+		for (int i = n_layers - 1; i > 0; i--)
+			for (int j = 0; j < n_neurons[i]; j++)
+				functionDerivative[i][j] = pow(M_E, sum[i][j]) / (1 + pow(M_E, sum[i][j]));
+		break;
+	case SOFTSIGN:
+		for (int i = n_layers - 1; i > 0; i--)
+			for (int j = 0; j < n_neurons[i]; j++)
+				functionDerivative[i][j] = 1 / pow(1 + fabs(sum[i][j]), 2);
+		break;
+	}
+
+	//----[GAMMA-OUTPUT]----//
+	for (int j = 0; j < n_neurons[n_layers - 1]; j++)
+	{
+		layers[n_layers - 1].gamma[j] = (layers[n_layers - 1].neurons[j].myPulse - _Hypothesis[j]) * functionDerivative[n_layers - 1][j];
+		del_C_Biases[n_layers - 1][j] += layers[n_layers - 1].gamma[j];
+	}
+
+	//----[DEL_C-OUTPUT]----//
+	for (int n = 0; n < n_neurons[n_layers - 1]; n++)
+	{
+		for (int m = 0; m < n_neurons[n_layers - 2]; m++)
+		{
+			layers[n_layers - 1].del_C[n][m] = layers[n_layers - 1].gamma[n] * layers[n_layers - 2].neurons[m].myPulse;
+			del_C_Weights[n_layers - 1][n][m] += layers[n_layers - 1].del_C[n][m];
+		}
+	}
+
+	for (int i = n_layers - 2; i > 0; i--)
+	{
+		//----[GAMMA-HIDDEN]----//
+		for (int k = 0; k < n_neurons[i]; k++)
+		{
+			for (int j = 0; j < n_neurons[i + 1]; j++)
+			{
+				layers[i].gamma[k] += getWeight(i, k, j) * layers[i + 1].gamma[j];
+			}
+
+			layers[i].gamma[k] *= functionDerivative[i][k];
+			del_C_Biases[i][k] += layers[i].gamma[k];
+		}
+
+		//----[DEL_C-HIDDEN]----//
+		for (int k = 0; k < n_neurons[i]; k++)
+		{
+			for (int q = 0; q < n_neurons[i - 1]; q++)
+			{
+				layers[i].del_C[k][q] = layers[i].gamma[k] * layers[i - 1].neurons[q].myPulse;
+				del_C_Weights[i][k][q] += layers[i].del_C[k][q];
+			}
+		}
 	}
 }
 
 void NeuralNetwork::recalculateParameters(float _Epsilon)
 {
+	if (!backpropagationFlag)
+	{
+		std::cout << "[ERROR] 'backpropagationFlag' was set 'false'" << std::endl;
+		exit(0);
+	}
+
 	float del_C_Module = 0;
 	for (int i = n_layers - 1; i > 0; i--)
 	{
@@ -459,7 +542,7 @@ float* NeuralNetwork::outputNeurons()
 			case LINEAR:
 				break;
 			case BINARY_STEP:
-				if (sum < 0)
+				if (sum <= 0)
 					sum = 0;
 				else
 					sum = 1;
