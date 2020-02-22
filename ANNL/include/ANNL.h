@@ -13,11 +13,11 @@ public:
 
 	NeuralNetwork(act_func _activationFunction, bool _backpropagation = false);
 
-	void config();
+	void config(void);
 
-	void setLayers(int _Layers);
+	void setLayers(int _nLayers);
 
-	void setNeurons(int _Layer, int _nNeuron);
+	void setNeurons(int _Layer, int _nNeurons);
 
 	void setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, float _Weight);
 
@@ -25,7 +25,7 @@ public:
 
 	int getNNeurons(int _Layer);
 
-	int getNLayers();
+	int getNLayers(void);
 
 	float getWeight(int _fromLayer, int _fromNeuron, int _toNeuron);
 
@@ -43,7 +43,7 @@ public:
 
 	void load(const char _Path[]);
 
-	float* feedforward();
+	float* feedforward(void);
 
 private:
 	int n_layers;

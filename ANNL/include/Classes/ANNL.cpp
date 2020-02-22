@@ -16,7 +16,7 @@ NeuralNetwork::NeuralNetwork(act_func _activationFunction, bool _backpropagation
 	backpropagationFlag = _backpropagation;
 }
 
-void NeuralNetwork::config()
+void NeuralNetwork::config(void)
 {
 	allocateWeights();
 
@@ -63,17 +63,17 @@ void NeuralNetwork::config()
 	}
 }
 
-void NeuralNetwork::setLayers(int _Layers)
+void NeuralNetwork::setLayers(int _nLayers)
 {
-	if (_Layers < 2)
+	if (_nLayers < 2)
 	{
-		std::cout << "[ERROR] _Layers must be greater than 1!" << std::endl;
+		std::cout << "[ERROR] _nLayers must be greater than 1!" << std::endl;
 		exit(0);
 	}
 	
-	n_layers = _Layers;
-	n_neurons = new int[_Layers];
-	layers = new Layer[_Layers];
+	n_layers = _nLayers;
+	n_neurons = new int[_nLayers];
+	layers = new Layer[_nLayers];
 }
 
 void NeuralNetwork::allocateWeights()
@@ -154,7 +154,7 @@ int NeuralNetwork::getNNeurons(int _Layer)
 	return n_neurons[_Layer];
 }
 
-int NeuralNetwork::getNLayers()
+int NeuralNetwork::getNLayers(void)
 {
 	return n_layers;
 }
@@ -474,7 +474,7 @@ void NeuralNetwork::load(const char _Path[])
 	FILE.close();
 }
 
-float* NeuralNetwork::feedforward()
+float* NeuralNetwork::feedforward(void)
 {
 	for (int i = 1; i < n_layers; i++) // i -> Current layer
 	{
