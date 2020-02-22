@@ -39,12 +39,12 @@ int main(int argc, char** argv)
 	Net.sendPulse(3, 100);
 	Net.sendPulse(4, 200);
 
-	float* output = Net.outputNeurons();
+	float* output = Net.feedforward();
 
 	for (int i = 0; i < Net.getNNeurons(Net.getNLayers() - 1); i++)
 		std::cout << output[i] << std::endl;
 
-	//Net.save("Param.ANNL");
+	Net.save("Param.ANNL");
 
 	return 0;
 }
