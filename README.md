@@ -24,7 +24,26 @@ This code is licensed under MIT License
 ## Contact
 - Instagram: @danilorodrigues128
 
-# Reference
+# Classes
+## NeuralNetwork
+```
+NeuralNetwork(act_func _activationFunction, bool _backpropagation = false)
+```
+
+**Description**  
+- Creates a Neural Network.
+
+**Parameters**  
+- *act_func _activationFunction*: The activation function of the Network.  
+   - **VALUES:** {LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN}.
+- *bool _backpropagation*: Controls if the Backpropagation Algorithm is going to be used or not (**DEFAULT:** *false*)
+
+**Example**
+```
+NeuralNetwork Net(NeuralNetwork::SIGMOID, true);
+```
+
+# Methods
 
 ## Backpropagation
 ```
