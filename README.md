@@ -36,7 +36,7 @@ NeuralNetwork(act_func _activationFunction, bool _backpropagation = false)
 **Parameters**  
 - *act_func _activationFunction*: The activation function of the Network.  
    - **VALUES:** {LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN}.
-- *bool _backpropagation*: Controls if the Backpropagation Algorithm is going to be used or not (**DEFAULT:** *false*)
+- *bool _backpropagation*: Controls whether the Backpropagation Algorithm is going to be used or not (**DEFAULT:** *false*)
 
 **Example**
 ```
