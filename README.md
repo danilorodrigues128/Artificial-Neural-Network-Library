@@ -253,3 +253,4 @@ This code is licensed under [MIT License](https://github.com/angular/angular.js/
 
 ## Contact
 - Instagram: [@danilorodrigues128](https://www.instagram.com/danilorodrigues128/)
+- LinkedIn: [Danilo Rodrigues](https://www.linkedin.com/in/danilo-rodrigues-509781183)
