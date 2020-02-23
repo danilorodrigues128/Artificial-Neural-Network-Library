@@ -6,7 +6,7 @@ The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on t
 ## Installation
 - Download the library
 
-- Copy the "include" folder to your project directory
+- Copy the ['include'](ANNL) folder to your project directory
 
 - Include all the downloaded files in your project
 
@@ -16,13 +16,13 @@ The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on t
 ```
 
 ## Contributing
-- Danilo O. Rodrigues: github.com/danilorodrigues128
+- Danilo O. Rodrigues: [github.com/danilorodrigues128](https://github.com/danilorodrigues128)
 
 ## License
-This code is licensed under MIT License
+This code is licensed under [MIT License](https://github.com/angular/angular.js/blob/master/LICENSE)
 
 ## Contact
-- Instagram: @danilorodrigues128
+- Instagram: [@danilorodrigues128](https://www.instagram.com/danilorodrigues128/)
 
 # Classes
 ## NeuralNetwork
