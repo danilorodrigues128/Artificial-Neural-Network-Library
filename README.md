@@ -1,4 +1,11 @@
 # Artificial Neural Network Library
+## Summary
+- [Description](#description)
+- [Installation](#installation)
+- [Reference](#reference)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
 ## Description
 The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on the development of Artificial Intelligence Algorithms. Its flexibility allows the developer to create Neural Networks with any number of layers, add different numbers of neurons at each one, set the weights and biases of the connections and manipulate the output of the algorithm as a simple array.
@@ -15,17 +22,9 @@ The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on t
 #include <include/ANNL.h>
 ```
 
-## Contributing
-- Danilo O. Rodrigues: [github.com/danilorodrigues128](https://github.com/danilorodrigues128)
-
-## License
-This code is licensed under [MIT License](https://github.com/angular/angular.js/blob/master/LICENSE)
-
-## Contact
-- Instagram: [@danilorodrigues128](https://www.instagram.com/danilorodrigues128/)
-
-# Classes
-## NeuralNetwork
+# Reference
+## Classes
+### NeuralNetwork
 ```cpp
 NeuralNetwork(act_func _activationFunction, bool _backpropagation = false)
 ```
@@ -43,9 +42,9 @@ NeuralNetwork(act_func _activationFunction, bool _backpropagation = false)
 NeuralNetwork Net(NeuralNetwork::SIGMOID, true);
 ```
 
-# Methods
+## Methods
 
-## Backpropagation
+### Backpropagation
 ```cpp
 void backpropagation(float _Hypothesis[])
 ```
@@ -57,7 +56,7 @@ void backpropagation(float _Hypothesis[])
 **Parameters**  
 - *float Hypothesis[]*: An one dimensional array containing the expected output for the Neural Network.
 
-## Config
+### Config
 ```cpp
 void config(void)
 ```
@@ -66,7 +65,7 @@ void config(void)
 - Configure arrays used during feedforward and backpropagation.  
 **NOTE:** _config()_ must be called after using the _setNeurons()_ method at every layer of the Network.
 
-## Feedforward
+### Feedforward
 ```cpp
 float* feedforward(void)
 ```
@@ -78,7 +77,7 @@ float* feedforward(void)
 **Return**  
 - An one dimensional array containing the pulses of the output neurons.
 
-## GetBias
+### GetBias
 ```cpp
 float getBias(int _Layer, int _Neuron)
 ```
@@ -93,7 +92,7 @@ float getBias(int _Layer, int _Neuron)
 **Return**  
 - A float containing the bias of the neuron.
 
-## GetNeuronPulse
+### GetNeuronPulse
 ```cpp
 float getNeuronPulse(int _Layer, int _Neuron)
 ```
@@ -108,7 +107,7 @@ float getNeuronPulse(int _Layer, int _Neuron)
 **Return**  
 - A float containing the pulse of the neuron.
 
-## GetNLayers
+### GetNLayers
 ```cpp
 int getNLayers(void)
 ```
@@ -119,7 +118,7 @@ int getNLayers(void)
 **Return**  
 - An integer containing the number of layer on the Network.
 
-## GetNNeurons
+### GetNNeurons
 ```cpp
 int getNNeurons(int _Layer)
 ```
@@ -133,7 +132,7 @@ int getNNeurons(int _Layer)
 **Return**  
 - An integer containing the number of neurons on the layer.
 
-## GetWeight
+### GetWeight
 ```cpp
 float getWeight(int _fromLayer, int _fromNeuron, int _toNeuron)
 ```
@@ -149,7 +148,7 @@ float getWeight(int _fromLayer, int _fromNeuron, int _toNeuron)
 **Return**  
 - A float containing the weight of the connection.
 
-## Load
+### Load
 ```cpp
 void load(const char _Path[])
 ```
@@ -160,7 +159,7 @@ void load(const char _Path[])
 **Parameters**  
 - *const char \_Path[]*: The path of the file.
 
-## RecalculateParameters
+### RecalculateParameters
 ```cpp
 void recalculateParameters(float _Epsilon)
 ```
@@ -172,7 +171,7 @@ void recalculateParameters(float _Epsilon)
 **Parameters**  
 - *float \_Epsilon*: The learning rate.
 
-## Save
+### Save
 ```cpp
 void save(const char _Path[])
 ```
@@ -183,7 +182,7 @@ void save(const char _Path[])
 **Parameters**  
 - *const char \_Path[]*: The path of the file.
 
-## SendPulse
+### SendPulse
 ```cpp
 void sendPulse(int _fromNeuron, float _Pulse)
 ```
@@ -195,7 +194,7 @@ void sendPulse(int _fromNeuron, float _Pulse)
 - *int \_fromNeuron*: The input neuron.
 - *float \_Pulse*: The pulse.
 
-## SetBias
+### SetBias
 ```cpp
 void setBias(int _Layer, int _Neuron, float _Bias)
 ```
@@ -208,7 +207,7 @@ void setBias(int _Layer, int _Neuron, float _Bias)
 - *int \_Neuron*: The neuron.
 - *float \_Bias*: The bias.
 
-## SetLayers
+### SetLayers
 ```cpp
 void setLayers(int _nLayers)
 ```
@@ -219,7 +218,7 @@ void setLayers(int _nLayers)
 **Parameters**  
 - *int \_nLayers*: The number of layers on the Network.
 
-## SetNeurons
+### SetNeurons
 ```cpp
 void setNeurons(int _Layer, int _nNeurons)
 ```
@@ -231,7 +230,7 @@ void setNeurons(int _Layer, int _nNeurons)
 - *int \_Layer*: The layer.
 - *int \_nNeurons*: The number of neurons on the layer.
 
-## SetWeight
+### SetWeight
 ```cpp
 void setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, float _Weight)
 ```
@@ -244,3 +243,12 @@ void setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, float _Weight)
 - *int \_fromNeuron*: The starting neuron.
 - *int \_toNeuron*: The ending neuron.
 - *float \_Weight*: The weight.
+
+## Contributing
+- Danilo O. Rodrigues: [github.com/danilorodrigues128](https://github.com/danilorodrigues128)
+
+## License
+This code is licensed under [MIT License](https://github.com/angular/angular.js/blob/master/LICENSE)
+
+## Contact
+- Instagram: [@danilorodrigues128](https://www.instagram.com/danilorodrigues128/)
