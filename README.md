@@ -11,7 +11,7 @@ The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on t
 - Include all the downloaded files in your project
 
 - Add to the top of your 'main.cpp' file:
-```
+```cpp
 #include <include/ANNL.h>
 ```
 
@@ -26,7 +26,7 @@ This code is licensed under MIT License
 
 # Classes
 ## NeuralNetwork
-```
+```cpp
 NeuralNetwork(act_func _activationFunction, bool _backpropagation = false)
 ```
 
@@ -35,18 +35,18 @@ NeuralNetwork(act_func _activationFunction, bool _backpropagation = false)
 
 **Parameters**  
 - *act_func _activationFunction*: The activation function of the Network.  
-   - **VALUES:** {LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN}.
+   - **VALUES:** `{LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN}`.
 - *bool _backpropagation*: Controls whether the Backpropagation Algorithm is going to be used or not (**DEFAULT:** *false*)
 
 **Example**
-```
+```cpp
 NeuralNetwork Net(NeuralNetwork::SIGMOID, true);
 ```
 
 # Methods
 
 ## Backpropagation
-```
+```cpp
 void backpropagation(float _Hypothesis[])
 ```
 
@@ -58,7 +58,7 @@ void backpropagation(float _Hypothesis[])
 - *float Hypothesis[]*: An one dimensional array containing the expected output for the Neural Network.
 
 ## Config
-```
+```cpp
 void config(void)
 ```
 
@@ -67,7 +67,7 @@ void config(void)
 **NOTE:** _config()_ must be called after using the _setNeurons()_ method at every layer of the Network.
 
 ## Feedforward
-```
+```cpp
 float* feedforward(void)
 ```
 
@@ -79,7 +79,7 @@ float* feedforward(void)
 - An one dimensional array containing the pulses of the output neurons.
 
 ## GetBias
-```
+```cpp
 float getBias(int _Layer, int _Neuron)
 ```
 
@@ -94,7 +94,7 @@ float getBias(int _Layer, int _Neuron)
 - A float containing the bias of the neuron.
 
 ## GetNeuronPulse
-```
+```cpp
 float getNeuronPulse(int _Layer, int _Neuron)
 ```
 
@@ -109,7 +109,7 @@ float getNeuronPulse(int _Layer, int _Neuron)
 - A float containing the pulse of the neuron.
 
 ## GetNLayers
-```
+```cpp
 int getNLayers(void)
 ```
 
@@ -120,7 +120,7 @@ int getNLayers(void)
 - An integer containing the number of layer on the Network.
 
 ## GetNNeurons
-```
+```cpp
 int getNNeurons(int _Layer)
 ```
 
@@ -134,7 +134,7 @@ int getNNeurons(int _Layer)
 - An integer containing the number of neurons on the layer.
 
 ## GetWeight
-```
+```cpp
 float getWeight(int _fromLayer, int _fromNeuron, int _toNeuron)
 ```
 
@@ -150,7 +150,7 @@ float getWeight(int _fromLayer, int _fromNeuron, int _toNeuron)
 - A float containing the weight of the connection.
 
 ## Load
-```
+```cpp
 void load(const char _Path[])
 ```
 
@@ -161,7 +161,7 @@ void load(const char _Path[])
 - *const char \_Path[]*: The path of the file.
 
 ## RecalculateParameters
-```
+```cpp
 void recalculateParameters(float _Epsilon)
 ```
 
@@ -173,7 +173,7 @@ void recalculateParameters(float _Epsilon)
 - *float \_Epsilon*: The learning rate.
 
 ## Save
-```
+```cpp
 void save(const char _Path[])
 ```
 
@@ -184,7 +184,7 @@ void save(const char _Path[])
 - *const char \_Path[]*: The path of the file.
 
 ## SendPulse
-```
+```cpp
 void sendPulse(int _fromNeuron, float _Pulse)
 ```
 
@@ -196,7 +196,7 @@ void sendPulse(int _fromNeuron, float _Pulse)
 - *float \_Pulse*: The pulse.
 
 ## SetBias
-```
+```cpp
 void setBias(int _Layer, int _Neuron, float _Bias)
 ```
 
@@ -209,7 +209,7 @@ void setBias(int _Layer, int _Neuron, float _Bias)
 - *float \_Bias*: The bias.
 
 ## SetLayers
-```
+```cpp
 void setLayers(int _nLayers)
 ```
 
@@ -220,7 +220,7 @@ void setLayers(int _nLayers)
 - *int \_nLayers*: The number of layers on the Network.
 
 ## SetNeurons
-```
+```cpp
 void setNeurons(int _Layer, int _nNeurons)
 ```
 
@@ -232,7 +232,7 @@ void setNeurons(int _Layer, int _nNeurons)
 - *int \_nNeurons*: The number of neurons on the layer.
 
 ## SetWeight
-```
+```cpp
 void setWeight(int _fromLayer, int _fromNeuron, int _toNeuron, float _Weight)
 ```
 
