@@ -1,6 +1,7 @@
 # Artificial Neural Network Library
 ## Summary
 - [Description](#description)
+- [Release Notes](https://github.com/danilorodrigues128/Artificial-Neural-Network-Library/releases)
 - [Installation](#installation)
 - [Reference](#reference)
 - [Contributing](#contributing)
