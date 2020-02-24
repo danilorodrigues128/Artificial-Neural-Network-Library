@@ -43,20 +43,34 @@ NeuralNetwork(act_func _activationFunction, bool _backpropagation = false)
 NeuralNetwork Net(NeuralNetwork::SIGMOID, true);
 ```
 
-## Methods
-
-### Backpropagation
+## Vectors
+### Pulse
 ```cpp
-void backpropagation(float _Hypothesis[])
+std::vector<float> Pulse;
 ```
 
 **Description**  
-- Calculate the gradient of the Cost Function according to the last feedforwarded sample.  
-**NOTE:** The _feedforward()_ method must be called before _backpropagation()_.
+- Stores the input neurons pulses.
 
-**Parameters**  
-- *float Hypothesis[]*: An one dimensional array containing the expected output for the Neural Network.
+**Example**
+```cpp
+Net.Pulse = { 5, 10 }; //Sets (5, 10) as the input for the Neural Network
+```
 
+### Hypothesis
+```cpp
+std::vector<float> Hypothesis;
+```
+
+**Description**  
+- Stores the Network's expected output.
+
+**Example**
+```cpp
+Net.Hypothesis = { 1, 0 }; //Sets (1, 0) as the Network's expected output
+```
+
+## Methods
 ### Config
 ```cpp
 void config(void)
@@ -73,7 +87,7 @@ float* feedforward(void)
 
 **Description**  
 - Propagate the pulses through the Network.  
-**NOTE:** The _sendPulse()_ method must be used at every input neuron before calling _feedforward()_.
+**NOTE:** _vector\<float\> Pulse_ and _vector\<float\> Hypothesis_ must be set before calling _feedforward()_.
 
 **Return**  
 - An one dimensional array containing the pulses of the output neurons.
@@ -167,7 +181,7 @@ void recalculateParameters(float _Epsilon)
 
 **Description**  
 - Calculate the new weights and biases according to the average gradient of the Cost Function.  
-**NOTE:** The _backpropagation()_ method must be called before _recalculateParameters()_.
+**NOTE:** The _feedforward()_ method must be called before _recalculateParameters()_.
 
 **Parameters**  
 - *float \_Epsilon*: The learning rate.
@@ -182,18 +196,6 @@ void save(const char _Path[])
 
 **Parameters**  
 - *const char \_Path[]*: The path of the file.
-
-### SendPulse
-```cpp
-void sendPulse(int _fromNeuron, float _Pulse)
-```
-
-**Description**  
-- Sends a pulse from a specific input neuron.
-
-**Parameters**  
-- *int \_fromNeuron*: The input neuron.
-- *float \_Pulse*: The pulse.
 
 ### SetBias
 ```cpp
