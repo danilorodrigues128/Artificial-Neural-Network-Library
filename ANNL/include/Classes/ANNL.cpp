@@ -201,17 +201,6 @@ float NeuralNetwork::getNeuronPulse(int _Layer, int _Neuron)
 	return layers[_Layer].activations[_Neuron];
 }
 
-void NeuralNetwork::sendPulse(int _fromNeuron, float _Pulse)
-{
-	if (_fromNeuron < 0 || _fromNeuron > n_neurons[0] - 1)
-	{
-		std::cout << "[ERROR] Neuron '" << _fromNeuron << "' not found on layer '" << 0 << "'" << std::endl;
-		exit(0);
-	}
-
-	layers[0].activations[_fromNeuron] = _Pulse;
-}
-
 void NeuralNetwork::backpropagation(void)
 {
 	backprop_count++;

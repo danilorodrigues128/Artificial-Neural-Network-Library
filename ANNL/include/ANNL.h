@@ -34,8 +34,6 @@ public:
 
 	float getNeuronPulse(int _Layer, int _Neuron);
 
-	void sendPulse(int _fromNeuron, float _Pulse);
-
 	void recalculateParameters(float _Epsilon);
 
 	void save(const char _Path[]);
