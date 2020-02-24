@@ -33,6 +33,12 @@ void NeuralNetwork::config(void)
 			exit(0);
 		}
 
+		for (int i = 0; i < n_neurons[0]; i++)
+			Pulse.push_back(0);
+
+		for(int i = 0;i < n_neurons[n_layers - 1]; i++)
+			Hypothesis.push_back(0);
+
 		del_C_Weights = new float** [n_layers];
 		del_C_Biases = new float* [n_layers];
 
@@ -76,7 +82,7 @@ void NeuralNetwork::setLayers(int _nLayers)
 	layers = new Layer[_nLayers];
 }
 
-void NeuralNetwork::allocateWeights()
+void NeuralNetwork::allocateWeights(void)
 {
 	for (int i = 1; i < n_layers; i++)
 	{
@@ -206,14 +212,8 @@ void NeuralNetwork::sendPulse(int _fromNeuron, float _Pulse)
 	layers[0].activations[_fromNeuron] = _Pulse;
 }
 
-void NeuralNetwork::backpropagation(float _Hypothesis[])
+void NeuralNetwork::backpropagation(void)
 {
-	if (!backpropagationFlag)
-	{
-		std::cout << "[ERROR] 'backpropagationFlag' was set 'false'" << std::endl;
-		exit(0);
-	}
-
 	backprop_count++;
 
 	int max = 0;
@@ -296,7 +296,7 @@ void NeuralNetwork::backpropagation(float _Hypothesis[])
 	//----[GAMMA-OUTPUT]----//
 	for (int j = 0; j < n_neurons[n_layers - 1]; j++)
 	{
-		layers[n_layers - 1].gamma[j] = (layers[n_layers - 1].activations[j] - _Hypothesis[j]) * functionDerivative[n_layers - 1][j];
+		layers[n_layers - 1].gamma[j] = (layers[n_layers - 1].activations[j] - Hypothesis.at(j)) * functionDerivative[n_layers - 1][j];
 		del_C_Biases[n_layers - 1][j] += layers[n_layers - 1].gamma[j];
 	}
 
@@ -476,6 +476,27 @@ void NeuralNetwork::load(const char _Path[])
 
 float* NeuralNetwork::feedforward(void)
 {
+	//------[INPUT-LAYER]------//
+	if (Pulse.empty())
+	{
+		std::cout << "[ERROR] Vector 'Pulse' is empty" << std::endl;
+		exit(0);
+	}
+	else if (Pulse.size() < n_neurons[0])
+	{
+		std::cout << "[ERROR] Vector 'Pulse' has too few elements" << std::endl;
+		exit(0);
+	}
+	else if (Pulse.size() > n_neurons[0])
+	{
+		std::cout << "[ERROR] Vector 'Pulse' has too many elements" << std::endl;
+		exit(0);
+	}
+
+	for (int i = 0; i < Pulse.size(); i++)
+		layers[0].activations[i] = Pulse.at(i);
+	//-------------------------//
+
 	for (int i = 1; i < n_layers; i++) // i -> Current layer
 	{
 		for (int j = 0; j < n_neurons[i]; j++) // j -> Current neuron
@@ -526,6 +547,27 @@ float* NeuralNetwork::feedforward(void)
 				break;
 			}
 		}
+	}
+
+	if (backpropagationFlag)
+	{
+		if (Hypothesis.empty())
+		{
+			std::cout << "[ERROR] Vector 'Hypothesis' is empty" << std::endl;
+			exit(0);
+		}
+		else if (Hypothesis.size() < n_neurons[n_layers - 1])
+		{
+			std::cout << "[ERROR] Vector 'Hypothesis' has too few elements" << std::endl;
+			exit(0);
+		}
+		else if (Hypothesis.size() > n_neurons[n_layers - 1])
+		{
+			std::cout << "[ERROR] Vector 'Hypothesis' has too many elements" << std::endl;
+			exit(0);
+		}
+
+		backpropagation();
 	}
 
 	return layers[n_layers - 1].activations;

@@ -2,12 +2,13 @@
 #define ANNL_H
 
 #include <Layer.h>
+#include <vector>
 
 class NeuralNetwork
 {
 public:
-	float*** del_C_Weights;
-	float** del_C_Biases;
+	std::vector<float> Hypothesis;
+	std::vector<float> Pulse;
 
 	enum act_func { LINEAR, BINARY_STEP, SIGMOID, TANH, RELU, GAUSSIAN, SINC, BENT_IDENTITY, SOFTPLUS, SOFTSIGN };
 
@@ -34,8 +35,6 @@ public:
 	float getNeuronPulse(int _Layer, int _Neuron);
 
 	void sendPulse(int _fromNeuron, float _Pulse);
-	
-	void backpropagation(float _Hypothesis[]);
 
 	void recalculateParameters(float _Epsilon);
 
@@ -51,11 +50,14 @@ private:
 
 	bool backpropagationFlag;
 	int backprop_count = 0;
+	float*** del_C_Weights;
+	float** del_C_Biases;
 
 	Layer* layers;
 	act_func activationFunction;
 
-	void allocateWeights();
+	void allocateWeights(void);
+	void backpropagation(void);
 };
 
 #endif
