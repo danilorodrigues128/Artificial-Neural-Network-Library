@@ -86,7 +86,7 @@ float* feedforward(void)
 ```
 
 **Description**  
-- Propagate the pulses through the Network.  
+- Propagate the pulses through the Network and backpropagate the Cost.  
 **NOTE:** _vector\<float\> Pulse_ and _vector\<float\> Hypothesis_ must be set before calling _feedforward()_.
 
 **Return**  
