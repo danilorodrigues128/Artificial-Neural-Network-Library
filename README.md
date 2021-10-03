@@ -16,7 +16,7 @@ The Artificial Neural Network Library (ANNL) is a C++ project aimed to help on t
 
 - Copy the ['include'](ANNL) folder to your project directory
 
-- Include all the downloaded files in your project
+- Include all the downloaded files to your project
 
 - Add to the top of your 'main.cpp' file:
 ```cpp
